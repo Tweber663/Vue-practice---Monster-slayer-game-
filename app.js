@@ -5,6 +5,8 @@ const app = Vue.createApp({
             monsterHealth: 100,  
             currentRound: 0, 
             gameFinished: false, 
+            winner: null, 
+            battleLog: []
         }
     }, 
     watch: {
@@ -25,7 +27,7 @@ const app = Vue.createApp({
         gameOverResults() {
             if (this.playerHealth <= 0 && this.monsterHealth <= 0) {
                 return 'Draw!'
-            } else if (this.playerHealth <= 0) {
+            } else if (this.playerHealth <= 0 || this.winner === 'monster') {
                 return 'Monster Win!'
             } else {
                 return 'Player Win!'; 
@@ -33,30 +35,32 @@ const app = Vue.createApp({
         },
         showResults() {
             return this.gameFinished === false? false : true;
-        }
+        },
     },
     methods: {
         attackMonster() {
            this.currentRound++;
            const attackValue = randomDamage(5, 20)
            this.monsterHealth -= attackValue; 
+           this.updatingBattleLog('Player', 'attacking', attackValue)
            this.attackPlayer(); 
         }, 
         specialAttackMonster() {
             this.currentRound++; 
             const attackValue= randomDamage(10, 25); 
             this.monsterHealth -= attackValue; 
-
+            this.updatingBattleLog('Player', 'attacking', attackValue)
         },
         attackPlayer() {
            const attackValue = randomDamage(10, 30); 
+           this.updatingBattleLog('Monster', 'attacking', attackValue)
            this.playerHealth -= attackValue; 
         }, 
         playerHeal() {
             this.currentRound++; 
             const healingValue = randomDamage(15, 35);
-            console.log(this.playerHealth + healingValue); 
             this.playerHealth + healingValue >= 100? this.playerHealth = 100 : this.playerHealth += healingValue;
+            this.updatingBattleLog('Player', 'healing', healingValue)
             this.attackPlayer(); 
         }, 
         startNewGame() {
@@ -64,8 +68,20 @@ const app = Vue.createApp({
             this.monsterHealth = 100; 
             this.currentRound = 0; 
             this.gameFinished = false; 
+        }, 
+        surrender() {
+            this.winner = 'monster';
+            this.gameFinished = true; 
+            this.updatingBattleLog = [];
+        },
+        updatingBattleLog(who, what, value) {
+            console.log(who, what, value)
+            this.battleLog.unshift({
+                who, 
+                what, 
+                value, 
+            })
         }
-
     }, 
 });
 
