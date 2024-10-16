@@ -34,9 +34,15 @@
 
       <section id="controls">
         <button @click="attackMonster">ATTACK</button>
-        <button>SPECIAL ATTACK</button>
-        <button>HEAL</button>
+        <button :disabled="mayUseSpecialAttack" @click="specialAttackMonster">SPECIAL ATTACK</button>
+        <button @click="playerHeal">HEAL</button>
         <button>SURRENDER</button>
+      </section>
+
+      <section v-if="showResults" id="gameOver" class="container">
+        <h2>Game Over!</h2>
+        <h3>{{gameOverResults}}</h3>
+        <button @click="startNewGame">Start New Game</button>
       </section>
 
       <section id="log" class="container">
